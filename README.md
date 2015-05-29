@@ -72,6 +72,29 @@ Default value is `true`
 
 You can also control the animation via CSS as it's a simple CSS opacity transition.
 
+####autoSize
+
+By default SimpleBar automatically calculates the scrollbar size (height / width) based on the container and content.
+
+Sometimes, if the design requires it, you may need a fixed size scrollbar (ie. image).
+Set `autoSize` option to `false` in this case, and style your scrollbar in CSS (height / width, background image, etc)
+
+    $('#myElement').simplebar({ autoSize: false });
+
+
+Default value is `true`
+
+####enableForced
+
+By default SimpleBar disables the plugin if the browser supports floating scrollbar.
+
+You can now control when to be enabled even if the browser supports floating scrollbars.
+For example, you can use other solutions to detect user's device type (desktop, tablet or phone), and enable it forced to desktop and tablet, but use autodetection for phones (or any other desired combination).
+
+    $('#myElement').simplebar({ enableForced: true });
+    
+Default value is `false` (autodection of browser floating scrollbar capabilities)
+
 ###Notifying the plugin of content changes
 
 If you later dynamically modify your content, for instance changing its height or width, or adding or removing content, you should recalculate the scrollbars like so:
