@@ -53,12 +53,14 @@
 
     SimpleBar.DEFAULTS = {
         wrapContent: true,
-        autoHide: true
+        autoHide: true,
+        autoSize: true,
+        enableForced: false
     };
 
     SimpleBar.prototype.init = function () {
-        // If scrollbar is a floating scrollbar, disable the plugin
-        if(SCROLLBAR_WIDTH === 0) {
+        // If scrollbar is a floating scrollbar AND it's not forced (via config option: enableForced), disable the plugin
+        if(!this.options.enableForced && SCROLLBAR_WIDTH === 0) {
           this.$el.css('overflow', 'auto');
 
           return;
@@ -139,9 +141,9 @@
 
         dragPos = eventOffset - this.$track.offset()[this.offsetAttr] - this.dragOffset;
         // Convert the mouse position into a percentage of the scrollbar height/width.
-        dragPerc = dragPos / this.$track[this.sizeAttr]();
+        dragPerc = dragPos / (this.$track[this.sizeAttr]() - (this.options.autoSize ? 0 : this.$scrollbar[0][this.scrollSizeAttr]));
         // Scroll the content by the same percentage.
-        scrollPos = dragPerc * this.$contentEl[0][this.scrollSizeAttr];
+        scrollPos = dragPerc * (this.$contentEl[0][this.scrollSizeAttr] - (this.options.autoSize ? 0 : this.$track[this.sizeAttr]() - this.$scrollbar[0][this.scrollSizeAttr] - 2));
 
         this.$scrollContentEl[this.scrollOffsetAttr](scrollPos);
     };
@@ -160,7 +162,7 @@
      * Resize scrollbar
      */
     SimpleBar.prototype.resizeScrollbar = function () {
-        if(SCROLLBAR_WIDTH === 0) {
+        if(!this.options.enableForced && SCROLLBAR_WIDTH === 0) {
             return;
         }
 
@@ -170,8 +172,8 @@
             scrollbarRatio  = scrollbarSize / contentSize,
             // Calculate new height/position of drag handle.
             // Offset of 2px allows for a small top/bottom or left/right margin around handle.
-            handleOffset    = Math.round(scrollbarRatio * scrollOffset) + 2,
-            handleSize      = Math.floor(scrollbarRatio * (scrollbarSize - 2)) - 2;
+            handleOffset    = this.options.autoSize ? Math.round(scrollbarRatio * scrollOffset) + 2 : Math.round((scrollbarSize - this.$scrollbar[0][this.scrollSizeAttr] - 2) * scrollOffset / (contentSize - scrollbarSize + this.$scrollbar[0][this.scrollSizeAttr] + 2)),
+            handleSize      = this.options.autoSize ? Math.floor(scrollbarRatio * (scrollbarSize - 2)) - 2 : this.$scrollbar[0][this.scrollSizeAttr];
 
 
         if (scrollbarSize < contentSize) {
